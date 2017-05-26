@@ -37,6 +37,11 @@ class IndexController extends Controller
 				$rpcCache->clearCache();
 			}
 
+			if (!$this->isDataValid($requestData))
+			{
+				throw new InvalidArgumentException();
+			}
+
 //			$cacheKey = $rpcCache->getCacheKey($requestData);
 //			$requestContent = $rpcCache->cache->get($cacheKey);
 
@@ -95,11 +100,6 @@ class IndexController extends Controller
 			$requestData['uri'] = $this->request->get('uri');
 			$requestData['host'] = $this->request->get('host');
 			$requestData['clear'] = $this->request->get('clear');
-		}
-
-		if (!$this->isDataValid($requestData))
-		{
-			throw new InvalidArgumentException();
 		}
 
 		return $requestData;

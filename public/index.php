@@ -1,70 +1,20 @@
 <?php
 
-use Phalcon\Mvc\Router;
-use Phalcon\DI\FactoryDefault;
-use Phalcon\Mvc\Application as BaseApplication;
+use Phalcon\Mvc\Application;
 
-/**
- * Class Application
- */
-class Application extends BaseApplication
-{
-	/**
-	 *
-	 */
-	protected function registerServices()
-	{
-		if(!isset($di))
-		{
-			$di = new FactoryDefault();
-		}
+define('APP_PATH', 'site');
 
-		/**
-		 * Registering a router
-		 */
-		$di->set('router', function ()
-		{
-			$router = new Router();
+require (__DIR__. '/../cbootstrap/cconfig.php');
 
-			$router->setDefaultModule("site");
 
-			$router->add('/:controller/:params', [
-				'module' => 'site',
-				'controller' => 'index',
-				'action' => 'index',
-				'params' => 2,
-			]);
 
-			return $router;
-		});
+$application = new Application($di);
 
-		$this->setDI($di);
-	}
+$application->registerModules([
+    'site' => [
+        'className' => 'Site\Module',
+        'path' => '../apps/http/site/Module.php'
+    ],
+]);
 
-	/**
-	 *
-	 */
-	public function main()
-	{
-		/**
-		 * Register the services
-		 */
-		$this->registerServices();
-
-		/**
-		 *  Register the installed modules
-		 *   witch can also work with site part
-		 */
-		$this->registerModules([
-			'site' => [
-				'className' => 'Site\Module',
-				'path' => '../apps/http/site/Module.php'
-			],
-		]);
-
-		echo $this->handle()->getContent();
-	}
-}
-
-$application = new Application();
-$application->main();
+echo $application->handle()->getContent();

@@ -6,7 +6,6 @@ use Phalcon\Loader;
 use Phalcon\Mvc\View;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\Dispatcher;
-use Phalcon\Db\Adapter\Pdo\Mysql as Database;
 use Phalcon\Mvc\ModuleDefinitionInterface;
 
 /**
@@ -58,18 +57,6 @@ class Module implements ModuleDefinitionInterface
 			$view->setViewsDir('../apps/http/site/views/');
 
 			return $view;
-		});
-
-		$di->set('db', function ()
-		{
-			return new Database(
-				[
-					"host" => "sitehost",
-					"username" => "siteroot",
-					"password" => "siteroot",
-					"dbname" => "sitesite"
-				]
-			);
 		});
 	}
 }

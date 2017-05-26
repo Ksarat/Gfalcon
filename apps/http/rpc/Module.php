@@ -7,9 +7,6 @@ use Phalcon\Mvc\View;
 use Phalcon\Mvc\Dispatcher;
 use Phalcon\DiInterface;
 use Phalcon\Mvc\ModuleDefinitionInterface;
-use Phalcon\Db\Adapter\Pdo\Mysql as Database;
-use Phalcon\Cache\Frontend\Data as DataFrontend;
-use Phalcon\Cache\Backend\Memcache;
 
 /**
  * Class Module
@@ -32,7 +29,6 @@ class Module implements ModuleDefinitionInterface
 				'JsonRPC\Models' => '../apps/http/rpc/models/',
 				'JsonRPC\Lib\Exceptions' => '../apps/http/rpc/lib/JsonRPC/Exeptions/',
 				'JsonRPC\Lib' => '../apps/http/rpc/lib/JsonRPC/',
-
 			]
 		);
 
@@ -64,36 +60,6 @@ class Module implements ModuleDefinitionInterface
 			return $view;
 		});
 
-		/**
-		 * Set memcache in rpc
-		 * as long as possible
-		 */
-		$di->setShared('memcached', function ()
-		{
-			$dataFrontend = new DataFrontend(["lifetime" => 0]);
-			return new Memcache($dataFrontend, [
-					"servers" => [
-						[
-							"host" => "127.0.0.1",
-							"port" => "11211",
-							"weight" => "1",
-						]
-					]
-				]
-			);
-		});
 
-		// Set a different connection in each module
-		$di->set('db', function ()
-		{
-			return new Database(
-				[
-					"host" => "rpchost",
-					"username" => "rpcroot",
-					"password" => "rpcroot",
-					"dbname" => "rpcrcp"
-				]
-			);
-		});
 	}
 }

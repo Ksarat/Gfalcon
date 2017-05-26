@@ -26,9 +26,9 @@ class JsonRPCDirector
 	/**
 	 * @return string
 	 */
-	public function receiveDataByRequest() : string
+	public function receiveDataByRequest(): string
 	{
-	   $blog = new Blog();
+		$blog = new Blog();
 
 		$contentData = $blog->getData($this->data);
 

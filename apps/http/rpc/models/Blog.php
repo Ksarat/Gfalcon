@@ -4,6 +4,10 @@ namespace JsonRPC\Models;
 
 use Phalcon\Mvc\Model;
 
+/**
+ * Class Blog
+ * @package JsonRPC\Models
+ */
 class Blog extends Model
 {
 	/**
@@ -13,8 +17,11 @@ class Blog extends Model
 	 */
 	public function getData(array $data): string
 	{
-		//connect to BD and get required data
-
+		/**
+		 * Connect to BD using Data - uri adn host and get required data
+		 *
+		 * $result = self::find($data);
+		 */
 
 		//to see error Not Found
 		if ($data['uri'] == 'empty')

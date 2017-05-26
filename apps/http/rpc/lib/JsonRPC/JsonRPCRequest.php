@@ -3,21 +3,13 @@ namespace JsonRPC\Lib;
 
 use Phalcon\Http\Request;
 
+/**
+ * Class JsonRPCRequest
+ * @package JsonRPC\Lib
+ */
 class JsonRPCRequest extends Request
 {
 	/**
-	 * Rpc requests
-	 * @var \Request[]
+	 * We can set specific Request for RPC but current Request deal with this
 	 */
-	protected $rpcRequests = [];
-
-	/**
-	 * Constructor
-	 * @return void
-	 */
-	public function __construct()
-	{
-		// creates rpc requests collection from raw body
-		// and adds them to $this->rpcRequests
-	}
 }

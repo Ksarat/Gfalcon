@@ -2,6 +2,7 @@
 
 namespace JsonRPC\Controllers;
 
+use JsonRPC\Lib\RpcCache;
 use Phalcon\Mvc\Controller;
 use JsonRPC\Lib\JsonRPCResponse;
 use JsonRPC\Lib\JsonRPCDirector;
@@ -9,65 +10,114 @@ use JsonRPC\Lib\Exceptions\BadRequestException;
 use JsonRPC\Lib\Exceptions\NotFoundException;
 use JsonRPC\Lib\Exceptions\InvalidArgumentException;
 
+/**
+ * Class IndexController
+ * @package JsonRPC\Controllers
+ */
 class IndexController extends Controller
 {
-    public function indexAction()
-    {
-	    $response = new JsonRPCResponse();
-
-	    try
-	    {
-		    $requestContent = $this->getContentByRequest();
-		    $response->setStatusCode(200);
-	    }
-	    catch ( BadRequestException $e)
-	    {
-		    $response->setStatusCode(400, 'Bad request');
-
-	    }
-	    catch ( NotFoundException $e)
-	    {
-		    $response->setStatusCode(404, 'Not found');
-	    }
-	    catch ( InvalidArgumentException $e)
-	    {
-		    $response->setStatusCode(403, 'Invalid arguments');
-	    }
-	    catch ( Exception $e)
-	    {
-		    $response->setStatusCode($e->getCode(), $e->getMessage());
-	    }
-
-	    $response->setJsonContent($requestContent);
-
-	    return $response;
-    }
 
 	/**
-	 *
+	 * @return JsonRPCResponse
 	 */
-	private function getContentByRequest(): string
+	public function indexAction()
+	{
+
+		$response = new JsonRPCResponse();
+		$requestContent = [];
+
+		try
+		{
+			$requestData = $this->getRequestData();
+
+			$rpcCache = new RpcCache($this->getDI());
+
+			if($requestData['clear'] == 'true')
+			{
+				$rpcCache->clearCache();
+			}
+
+//			$cacheKey = $rpcCache->getCacheKey($requestData);
+//			$requestContent = $rpcCache->cache->get($cacheKey);
+
+			if(empty($requestContent))
+			{
+				$requestContent = $this->getContentByRequest($requestData);
+				//$rpcCache->cache->save($cacheKey, $requestContent);
+			}
+
+			$response->setStatusCode(200);
+		}
+		catch (BadRequestException $e)
+		{
+			$response->setStatusCode(400, 'Bad request');
+		}
+		catch (NotFoundException $e)
+		{
+			$response->setStatusCode(404, 'Not found');
+		}
+		catch (InvalidArgumentException $e)
+		{
+			$response->setStatusCode(403, 'Invalid arguments');
+		}
+		catch (\Exception $e)
+		{
+			$response->setStatusCode($e->getCode(), $e->getMessage());
+		}
+
+		$response->setJsonContent($requestContent);
+
+		return $response;
+	}
+
+	/**
+	 * @return array
+	 * @throws BadRequestException
+	 * @throws InvalidArgumentException
+	 */
+	private function getRequestData(): array
 	{
 		if (!$this->request->isGet())
 		{
 			throw new BadRequestException();
 		}
 
-		$requestData['uri'] = substr($this->request->get('_url'), 1);
-		$requestData['host'] = $this->request->getHttpHost();
+		$jsonData = $this->request->getJsonRawBody(true);
 
-		if(!$this->isDataValid($requestData))
+		if ($jsonData)
+		{
+			$requestData['uri'] = $jsonData['uri'];
+			$requestData['host'] = $jsonData['host'];
+			$requestData['clear'] = $jsonData['clear'];
+		}
+		else
+		{
+			$requestData['uri'] = $this->request->get('uri');
+			$requestData['host'] = $this->request->get('host');
+			$requestData['clear'] = $this->request->get('clear');
+		}
+
+		if (!$this->isDataValid($requestData))
 		{
 			throw new InvalidArgumentException();
 		}
 
+		return $requestData;
+	}
+
+	/**
+	 * @param $requestData
+	 *
+	 * @return string
+	 * @throws NotFoundException
+	 */
+	private function getContentByRequest($requestData): string
+	{
 		$jsonDirector = new JsonRPCDirector($requestData);
-
-
 
 		$contentData = $jsonDirector->receiveDataByRequest();
 
-		if(empty($contentData))
+		if (empty($contentData))
 		{
 			throw new NotFoundException();
 		}
@@ -80,7 +130,7 @@ class IndexController extends Controller
 	 *
 	 * @return bool
 	 */
-	public function isDataValid($data) : bool
+	public function isDataValid($data): bool
 	{
 		if (empty($data['uri']) || empty($data['host']))
 		{
@@ -91,5 +141,4 @@ class IndexController extends Controller
 			return true;
 		}
 	}
-
 }

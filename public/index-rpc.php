@@ -1,8 +1,5 @@
 <?php
 
-error_reporting(E_ALL);
-
-use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DI\FactoryDefault;
 use Phalcon\Mvc\Application as BaseApplication;
@@ -10,42 +7,31 @@ use Phalcon\Mvc\Application as BaseApplication;
 /**
  * Class Application
  */
-class Application extends BaseApplication
+class RpcApplication extends BaseApplication
 {
-
 	/**
-	 * Register the services here to make them general or register in the ModuleDefinition to make them module-specific
+	 * Register the services
 	 */
 	protected function registerServices()
 	{
-
-		if(!isset($di))
+		if (!isset($di))
 		{
 			$di = new FactoryDefault();
 		}
-
-
-		$loader = new Loader();
-
-		/**
-		 * We're a registering a set of directories taken from the configuration file
-		 */
-		$loader
-			->registerDirs([__DIR__ . '/../app/library/'])
-			->register();
 
 		// Registering a router
 		$di->set('router', function ()
 		{
 			$router = new Router();
 
-				$router->setDefaultModule("rpc");
-				$router->add('/:params', [
-					'module' => 'rpc',
-					'controller' => 'index',
-					'action' => 'index',
-					'params' => 1,
-				])->setName('rpc');
+			$router->setDefaultModule("rpc");
+
+			$router->add('/', [
+				'module' => 'rpc',
+				'controller' => 'index',
+				'action' => 'index',
+			]);
+
 
 			return $router;
 		});
@@ -60,7 +46,9 @@ class Application extends BaseApplication
 	{
 		$this->registerServices();
 
-		// Register the installed modules
+		/**
+		 *  Register the installed modules witch can also work with rpc-server part
+		 */
 		$this->registerModules([
 			'rpc' => [
 				'className' => 'JsonRPC\Module',
@@ -72,5 +60,5 @@ class Application extends BaseApplication
 	}
 }
 
-$application = new Application();
+$application = new RpcApplication();
 $application->main();

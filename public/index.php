@@ -1,8 +1,5 @@
 <?php
 
-error_reporting(E_ALL);
-
-use Phalcon\Loader;
 use Phalcon\Mvc\Router;
 use Phalcon\DI\FactoryDefault;
 use Phalcon\Mvc\Application as BaseApplication;
@@ -13,32 +10,30 @@ use Phalcon\Mvc\Application as BaseApplication;
 class Application extends BaseApplication
 {
 	/**
-	 * Register the services here to make them general or register in the ModuleDefinition to make them module-specific
+	 *
 	 */
 	protected function registerServices()
 	{
-		$di = new FactoryDefault();
-		$loader = new Loader();
-		/**
-		 * We're a registering a set of directories taken from the configuration file
-		 */
-		$loader
-			->registerDirs([__DIR__ . '/../app/library/'])
-			->register();
+		if(!isset($di))
+		{
+			$di = new FactoryDefault();
+		}
 
-		// Registering a router
+		/**
+		 * Registering a router
+		 */
 		$di->set('router', function ()
 		{
 			$router = new Router();
 
 			$router->setDefaultModule("site");
 
-			$router->add('/:params', [
+			$router->add('/:controller/:params', [
 				'module' => 'site',
 				'controller' => 'index',
 				'action' => 'index',
-				'params' => 1,
-			])->setName('site');
+				'params' => 2,
+			]);
 
 			return $router;
 		});
@@ -51,9 +46,15 @@ class Application extends BaseApplication
 	 */
 	public function main()
 	{
+		/**
+		 * Register the services
+		 */
 		$this->registerServices();
 
-		// Register the installed modules
+		/**
+		 *  Register the installed modules
+		 *   witch can also work with site part
+		 */
 		$this->registerModules([
 			'site' => [
 				'className' => 'Site\Module',

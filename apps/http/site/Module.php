@@ -27,6 +27,7 @@ class Module implements ModuleDefinitionInterface
 			[
 				'Site\Controllers' => '../apps/http/site/controllers/',
 				'Site\Models' => '../apps/http/site/models/',
+                'Apps\Lib' => '../apps/lib/',
 			]
 		);
 

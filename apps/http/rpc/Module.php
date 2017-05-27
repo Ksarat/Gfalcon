@@ -29,6 +29,7 @@ class Module implements ModuleDefinitionInterface
 				'JsonRPC\Models' => '../apps/http/rpc/models/',
 				'JsonRPC\Lib\Exceptions' => '../apps/http/rpc/lib/JsonRPC/Exeptions/',
 				'JsonRPC\Lib' => '../apps/http/rpc/lib/JsonRPC/',
+				'Apps\Lib' => '../apps/lib/',
 			]
 		);
 

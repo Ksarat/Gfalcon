@@ -2,7 +2,7 @@
 
 namespace JsonRPC\Controllers;
 
-use JsonRPC\Lib\RpcCache;
+use Apps\Lib\AppMemcached;
 use Phalcon\Mvc\Controller;
 use JsonRPC\Lib\JsonRPCResponse;
 use JsonRPC\Lib\JsonRPCDirector;
@@ -30,7 +30,7 @@ class IndexController extends Controller
 		{
 			$requestData = $this->getRequestData();
 
-			$rpcCache = new RpcCache($this->getDI());
+			$rpcCache = new AppMemcached($this->getDI());
 
 			if($requestData['clear'] == 'true')
 			{
@@ -42,14 +42,7 @@ class IndexController extends Controller
 				throw new InvalidArgumentException();
 			}
 
-//			$cacheKey = $rpcCache->getCacheKey($requestData);
-//			$requestContent = $rpcCache->cache->get($cacheKey);
-
-			if(empty($requestContent))
-			{
-				$requestContent = $this->getContentByRequest($requestData);
-				//$rpcCache->cache->save($cacheKey, $requestContent);
-			}
+			$requestContent = $this->getContentByRequest($requestData);
 
 			$response->setStatusCode(200);
 		}

@@ -1,15 +1,15 @@
 <?php
 
-namespace JsonRPC\Lib;
+namespace Apps\Lib;
 
 use Phalcon\Cache\Backend\Memcache;
 use Phalcon\DiInterface;
 
 /**
- * Class IndexController
- * @package JsonRPC\Controllers
+ * Class AppMemcached
+ * @package Apps\Lib
  */
-class RpcCache
+class AppMemcached
 {
 	/**
 	 * @var Memcache
